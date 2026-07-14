@@ -1,0 +1,24 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 0
+
+[[patches]]
+[patches.pattern]
+target = "globals.lua"
+pattern = "RENTAL = HEX('b18f43'),"
+position = "after"
+match_indent = true
+payload = '''
+    TOUHOU_FAIRY_PINK = HEX('fca4d9'),
+'''
+
+[[patches]]
+[patches.pattern]
+target = 'functions/misc_functions.lua'
+pattern = 'G.ARGS.LOC_COLOURS = G.ARGS.LOC_COLOURS or {'
+position = 'after'
+match_indent = true
+payload = '''
+    touhou_fairy_pink = G.C.TOUHOU_FAIRY_PINK,
+'''

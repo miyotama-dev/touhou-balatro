@@ -1,0 +1,159 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 0
+
+
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = "local _size = math.max(1, self.ability.extra + (G.GAME.modifiers.booster_size_mod or 0))"
+position = "after"
+payload = '''
+G.GAME.touhou_pack_name = self.ability.name
+G.GAME.touhou_pack_size = _size
+SMODS.calculate_context({touhou_booster = true})
+_size = G.GAME.touhou_pack_size
+'''
+match_indent = true
+
+
+[[patches]]
+[patches.pattern]
+target = "functions/button_callbacks.lua"
+pattern = "G.STATE = G.STATES.SHOP"
+position = "at"
+payload = '''
+if G.GAME.TOUHOU_SKIP_SHOP then
+    G.STATE = G.STATES.BLIND_SELECT
+    G.GAME.TOUHOU_SKIP_SHOP = false
+else
+    G.STATE = G.STATES.SHOP
+end
+'''
+match_indent = true
+
+
+[[patches]]
+[patches.pattern]
+target = "functions/state_events.lua"
+pattern = "delay(0.4); ease_ante(1, true); delay(0.4); check_for_unlock({type = 'ante_up', ante = G.GAME.round_resets.ante + 1})"
+position = "at"
+payload = '''
+if not G.GAME.TOUHOU_BLOCK_ANTE_INCREASE then
+    delay(0.4); ease_ante(1, true); delay(0.4); check_for_unlock({type = 'ante_up', ante = G.GAME.round_resets.ante + 1})
+else
+    G.GAME.TOUHOU_BLOCK_ANTE_INCREASE = false
+end
+'''
+match_indent = true
+
+# If Cryptid
+[[patches]]
+[patches.pattern]
+target = "functions/state_events.lua"
+pattern = "delay(0.4); ease_ante(G.GAME.blind and G.GAME.blind:cry_calc_ante_gain() or 1); Cryptid.apply_ante_tax(); delay(0.4); check_for_unlock({type = 'ante_up', ante = G.GAME.round_resets.ante + 1})"
+position = "at"
+payload = '''
+if not G.GAME.TOUHOU_BLOCK_ANTE_INCREASE then
+    delay(0.4); ease_ante(G.GAME.blind and G.GAME.blind:cry_calc_ante_gain() or 1); Cryptid.apply_ante_tax(); delay(0.4); check_for_unlock({type = 'ante_up', ante = G.GAME.round_resets.ante + 1})
+else
+    G.GAME.TOUHOU_BLOCK_ANTE_INCREASE = false
+end
+'''
+match_indent = true
+
+
+[[patches]]
+[patches.pattern]
+target = "functions/state_events.lua"
+pattern = "if SMODS.saved then game_over = false end"
+position = "after"
+payload = '''
+for i = 1, #G.playing_cards do
+    G.playing_cards[i]:calculate_rental()
+    G.playing_cards[i]:calculate_perishable()
+end
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "functions/state_events.lua"
+pattern = "SMODS.calculate_context({full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, after = true})"
+position = "after"
+payload = '''
+G.E_MANAGER:add_event(Event({
+    trigger = 'immediate',
+    func = (function() 
+    TOUHOU.purge(G.discard, "touhou_temporary_card", false)
+    TOUHOU.purge(G.deck, "touhou_temporary_card", false)
+    return true 
+    end)
+}))
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "functions/UI_definitions.lua"
+pattern = "G.GAME.spectral_rate = G.GAME.spectral_rate or 0"
+position = "before"
+payload = '''
+if G.GAME.mokou_list and #G.GAME.mokou_list > 0 then
+    if pseudorandom("touhou_fujiwara_no_mokou"..G.GAME.round_resets.ante) > 0.96 then
+        local card = copy_card(G.GAME.mokou_list[1])
+        table.remove(G.GAME.mokou_list, 1)
+        create_shop_card_ui(card, 'Joker', G.shop_jokers)
+        G.E_MANAGER:add_event(Event({
+            func = (function()
+                for k, v in ipairs(G.GAME.tags) do
+                    if v:apply_to_run({type = 'store_joker_modify', card = card}) then break end
+                end
+                return true
+            end)
+        }))
+        return card
+    end
+end
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "functions/state_events.lua"
+pattern = "SMODS.calculate_context({end_of_round = true, game_over = game_over, beat_boss = G.GAME.blind.boss })"
+position = "after"
+payload = '''
+TOUHOU.end_of_round_calculations()
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "functions/UI_definitions.lua"
+pattern = "G.GAME.blind:change_dim(1.5,1.5)"
+position = "after"
+payload = '''
+if G.GAME.touhou_diacritic then
+    G.GAME.touhou_blind_diacritic = Sprite(0, 0, 34, 34, G.ASSET_ATLAS["touhou_atlas_blinds_diacritics"], {x = 0, y = 0})
+else
+    G.GAME.touhou_blind_diacritic = Sprite(0, 0, 34, 34, G.ASSET_ATLAS["touhou_atlas_blinds_diacritics"], {x = 0, y = 2})
+end
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "functions/UI_definitions.lua"
+pattern = "{n=G.UIT.O, config={object = G.GAME.blind, draw_layer = 1}},"
+position = "at"
+payload = '''
+{n=G.UIT.C, config={align = "cm", padding = 0.75}, nodes={
+    {n=G.UIT.R, config={align = "cm", padding = -1.5}, nodes={
+        {n=G.UIT.O, config={object = G.GAME.blind, draw_layer = 1}},
+        {n=G.UIT.O, config={w = 1.5, h = 1.5, object = G.GAME.touhou_blind_diacritic, draw_layer = 2}},
+    }},
+}},
+'''
+match_indent = true

@@ -1,0 +1,13 @@
+{
+	"id": "touhou",
+	"name": "Touhou",
+	"display_name": "Touhou",
+	"author": ["Miyotama"],
+	"description": "The world of fantasy within your hand.",
+	"prefix": "touhou",
+	"main_file": "Touhou.lua",
+	"priority": 1884,
+	"badge_colour": "fe000d",
+	"version": "0.1.0",
+	"dependencies": []
+}

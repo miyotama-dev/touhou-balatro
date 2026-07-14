@@ -1,0 +1,1 @@
+TOUHOU.set_card_types()
