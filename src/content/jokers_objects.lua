@@ -529,7 +529,7 @@ SMODS.Joker {
     calculate = function(self, card, context)
         if context.ending_shop and G.consumeables.cards[1] then
             local editionless_consumables = SMODS.Edition:get_edition_cards(G.consumeables, true)
-            local chosen_consumable = pseudorandom_element(editionless_jokers, "touhou_roukanken")
+            local chosen_consumable = pseudorandom_element(editionless_consumables, "touhou_roukanken")
             chosen_consumable:set_edition({ negative = true })
             return {
                 message = localize("k_touhou_roukanken_ex")
