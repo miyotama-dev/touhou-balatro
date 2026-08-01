@@ -14,11 +14,11 @@ if G.C then
     end
 end
 if G.ARGS then
-    local prev_loc_colours = G.ARGS.LOC_COLOURS or {}
-    loc_colour('')
-    for k, v in pairs(prev_loc_colours) do
-        G.ARGS.LOC_COLOURS[k:lower()] = HEX(v)
-    end
+    -- local prev_loc_colours = G.ARGS.LOC_COLOURS or {}
+    -- loc_colour('')
+    -- for k, v in pairs(prev_loc_colours) do
+    --     G.ARGS.LOC_COLOURS[k:lower()] = HEX(v)
+    -- end
     for k, v in pairs(colors) do
         G.ARGS.LOC_COLOURS[k:lower()] = HEX(v)
     end

@@ -560,6 +560,8 @@ G.FUNCS.play_cards_from_highlighted = function(e)
                 elseif type(TOUHOU.check_type(G.jokers.cards[i], "human")) == "number" then
                     TOUHOU.ease_mystic(-TOUHOU.check_type(G.jokers.cards[i], "human"))
                 end
+            end
+            if TOUHOU.check_type(G.jokers.cards[i], "youkai") then
                 if type(TOUHOU.check_type(G.jokers.cards[i], "youkai")) == "boolean" then
                     TOUHOU.ease_mystic(1)
                 elseif type(TOUHOU.check_type(G.jokers.cards[i], "youkai")) == "number" then
