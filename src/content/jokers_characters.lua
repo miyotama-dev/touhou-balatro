@@ -996,18 +996,18 @@ SMODS.Joker {
     end,
     calculate = function(self, card, context)
         if context.end_of_round and not context.game_over and context.main_eval then
-            if #G.consumeables.cards < G.consumeables.config.card_limit then
-                G.E_MANAGER:add_event(Event({
-                    func = function()
+            G.E_MANAGER:add_event(Event({
+                func = function()
+                    if #G.consumeables.cards < G.consumeables.config.card_limit then
                         SMODS.add_card {
                             set = "Planet",
                             area = G.consumeables,
                             key_append = "touhou_eirin_yagokoro",
                         }
-                        return true
                     end
-                }))
-            end
+                    return true
+                end
+            }))
         end
     end,
 }
