@@ -1197,12 +1197,12 @@ SMODS.Joker {
     calculate = function(self, card, context)
         if context.joker_main then
             local count = 0
-            for k, v in pairs(context.scoring_hand) do
+            for k, v in pairs(context.full_hand) do
                 if next(SMODS.get_enhancements(v)) then
                     count = count + 1
                 end
             end
-            if to_big(card.ability.extra.number) >= to_big(2) then
+            if to_big(count) >= to_big(2) then
                 return {
                     xmult = card.ability.extra.xmult
                 }
